@@ -14,9 +14,31 @@ public class Item {
         this.quality = quality;
     }
 
-   @Override
-   public String toString() {
+    @Override
+    public String toString() {
         return this.name + ", " + this.sellIn + ", " + this.quality;
+    }
+
+    void increaseQuality() {
+        this.quality = this.quality + 1;
+    }
+
+    void increaseQualityIfNotMax() {
+        if (this.quality < 50) {
+            increaseQuality();
+        }
+    }
+
+    void increaseQualityIfFarFromExpiry() {
+        if (this.sellIn < 11) {
+            increaseQualityIfNotMax();
+        }
+    }
+
+    void increaseQualityIfCloseToExpiry() {
+        if (this.sellIn < 6) {
+            increaseQualityIfNotMax();
+        }
     }
 
 }

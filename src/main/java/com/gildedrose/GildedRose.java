@@ -47,34 +47,20 @@ class GildedRose {
 
     private void increaseQualityIncludingBackstagePasses(Item item) {
         if (item.quality < 50) {
-            item.quality = item.quality + 1;
+            increaseQuality(item);
             increaseQualityOfBackstagePasses(item);
         }
     }
 
     private void increaseQualityOfBackstagePasses(Item item) {
         if (item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-            increaseQualityIfFarFromExpiry(item);
-            increaseQualityIfCloseToExpiry(item);
-        }
-    }
-
-    private void increaseQualityIfCloseToExpiry(Item item) {
-        if (item.sellIn < 6) {
-            increaseQuality(item);
-        }
-    }
-
-    private void increaseQualityIfFarFromExpiry(Item item) {
-        if (item.sellIn < 11) {
-            increaseQuality(item);
+            item.increaseQualityIfFarFromExpiry();
+            item.increaseQualityIfCloseToExpiry();
         }
     }
 
     private void increaseQuality(Item item) {
-        if (item.quality < 50) {
-            item.quality = item.quality + 1;
-        }
+        item.increaseQuality();
     }
 
     private void updateSellIn(Item item) {
@@ -94,7 +80,7 @@ class GildedRose {
         if (!item.name.equals("Aged Brie")) {
             handleExpiredItemNotAgedBrie(item);
         } else {
-            increaseQuality(item);
+            item.increaseQualityIfNotMax();
         }
     }
 
@@ -105,6 +91,5 @@ class GildedRose {
             item.quality = item.quality - item.quality;
         }
     }
-
 
 }

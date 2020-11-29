@@ -20,75 +20,7 @@ class GildedRose {
      */
     public void updateQuality() {
         for (int i = 0; i < items.length; i++) {
-            updateQuality(items[i]);
-            updateSellIn(items[i]);
-        }
-    }
-
-    private void updateQuality(Item item) {
-        if (!item.name.equals("Aged Brie") && !item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-            decreaseQualityIfHasQuality(item);
-        } else {
-            increaseQualityIncludingBackstagePasses(item);
-        }
-    }
-
-    private void decreaseQualityIfHasQuality(Item item) {
-        if (item.quality > 0) {
-            decreaseQuality(item);
-        }
-    }
-
-    private void decreaseQuality(Item item) {
-        if (!item.name.equals("Sulfuras, Hand of Ragnaros")) {
-            item.quality = item.quality - 1;
-        }
-    }
-
-    private void increaseQualityIncludingBackstagePasses(Item item) {
-        if (item.quality < 50) {
-            increaseQuality(item);
-            increaseQualityOfBackstagePasses(item);
-        }
-    }
-
-    private void increaseQualityOfBackstagePasses(Item item) {
-        if (item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-            item.increaseQualityIfFarFromExpiry();
-            item.increaseQualityIfCloseToExpiry();
-        }
-    }
-
-    private void increaseQuality(Item item) {
-        item.increaseQuality();
-    }
-
-    private void updateSellIn(Item item) {
-        if (!item.name.equals("Sulfuras, Hand of Ragnaros")) {
-            item.sellIn = item.sellIn - 1;
-        }
-        handleIfExpired(item);
-    }
-
-    private void handleIfExpired(Item item) {
-        if (item.sellIn < 0) {
-            handleExpired(item);
-        }
-    }
-
-    private void handleExpired(Item item) {
-        if (!item.name.equals("Aged Brie")) {
-            handleExpiredItemNotAgedBrie(item);
-        } else {
-            item.increaseQualityIfNotMax();
-        }
-    }
-
-    private void handleExpiredItemNotAgedBrie(Item item) {
-        if (!item.name.equals("Backstage passes to a TAFKAL80ETC concert")) {
-            decreaseQualityIfHasQuality(item);
-        } else {
-            item.quality = item.quality - item.quality;
+            items[i].update();
         }
     }
 

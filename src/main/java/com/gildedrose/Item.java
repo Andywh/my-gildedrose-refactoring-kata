@@ -13,6 +13,8 @@ public class Item {
         boolean isYes();
 
         void handleExpired();
+
+        void updateQuality();
     }
 
     class AgedBrie implements IsAgedBrie {
@@ -25,6 +27,11 @@ public class Item {
         public void handleExpired() {
             increaseQualityIfNotMax();
         }
+
+        public void updateQuality() {
+            increaseQualityIncludingBackstagePasses();
+        }
+
 
     }
 
@@ -39,14 +46,20 @@ public class Item {
             isBackstagePasses.handleExpiredBackstagePasses();
         }
 
+        public void updateQuality() {
+            isBackstagePasses.updateQuality();
+        }
+
     }
 
     interface IsBackstagePasses {
         boolean isYes();
 
-        boolean isNo();
-
         void handleExpiredBackstagePasses();
+
+        void updateQuality();
+
+        void increaseQualityOfBackstagePasses();
     }
 
     class BackstagePasses implements IsBackstagePasses {
@@ -56,13 +69,17 @@ public class Item {
             return true;
         }
 
-        @Override
-        public boolean isNo() {
-            return false;
-        }
-
         public void handleExpiredBackstagePasses() {
             quality = 0;
+        }
+
+        public void updateQuality() {
+            increaseQualityIncludingBackstagePasses();
+        }
+
+        public void increaseQualityOfBackstagePasses() {
+            increaseQualityIfFarFromExpiry();
+            increaseQualityIfCloseToExpiry();
         }
 
     }
@@ -74,13 +91,15 @@ public class Item {
             return false;
         }
 
-        @Override
-        public boolean isNo() {
-            return false;
-        }
-
         public void handleExpiredBackstagePasses() {
             decreaseQualityIfItemHasQuality();
+        }
+
+        public void updateQuality() {
+            decreaseQualityIfItemHasQuality();
+        }
+
+        public void increaseQualityOfBackstagePasses() {
         }
 
     }
@@ -124,17 +143,10 @@ public class Item {
         }
     }
 
-    void increaseQualityOfBackstagePasses() {
-        if (isBackstagePasses.isYes()) {
-            increaseQualityIfFarFromExpiry();
-            increaseQualityIfCloseToExpiry();
-        }
-    }
-
     void increaseQualityIncludingBackstagePasses() {
         if (quality < MAX_QUALITY) {
             quality++;
-            increaseQualityOfBackstagePasses();
+            isBackstagePasses.increaseQualityOfBackstagePasses();
         }
     }
 
@@ -148,18 +160,6 @@ public class Item {
         if (quality > 0) {
             decreaseQuality();
         }
-    }
-
-    void updateQuality() {
-        if (notBrieAndNotBackstagePasses()) {
-            decreaseQualityIfItemHasQuality();
-        } else {
-            increaseQualityIncludingBackstagePasses();
-        }
-    }
-
-    private boolean notBrieAndNotBackstagePasses() {
-        return !isAgedBrie.isYes() && !isBackstagePasses.isYes();
     }
 
     void handleIfExpired() {
@@ -176,7 +176,7 @@ public class Item {
     }
 
     void update() {
-        updateQuality();
+        isAgedBrie.updateQuality();
         updateSellIn();
     }
 

@@ -9,11 +9,80 @@ public class Item {
     public static final int FAR_FROM_EXPIRY = 11;
     public static final int CLOSE_TO_EXPIRY = 6;
 
-    enum IsAgedBrie {
-        Yes, No
+    interface IsAgedBrie {
+        boolean isYes();
+
+        void handleExpired();
     }
-    enum IsBackstagePasses {
-        Yes, No
+
+    class AgedBrie implements IsAgedBrie {
+
+        @Override
+        public boolean isYes() {
+            return true;
+        }
+
+        public void handleExpired() {
+            increaseQualityIfNotMax();
+        }
+
+    }
+
+    class NotAgedBrie implements IsAgedBrie {
+
+        @Override
+        public boolean isYes() {
+            return false;
+        }
+
+        public void handleExpired() {
+            isBackstagePasses.handleExpiredBackstagePasses();
+        }
+
+    }
+
+    interface IsBackstagePasses {
+        boolean isYes();
+
+        boolean isNo();
+
+        void handleExpiredBackstagePasses();
+    }
+
+    class BackstagePasses implements IsBackstagePasses {
+
+        @Override
+        public boolean isYes() {
+            return true;
+        }
+
+        @Override
+        public boolean isNo() {
+            return false;
+        }
+
+        public void handleExpiredBackstagePasses() {
+            quality = 0;
+        }
+
+    }
+
+    class NotBackstagePasses implements IsBackstagePasses {
+
+        @Override
+        public boolean isYes() {
+            return false;
+        }
+
+        @Override
+        public boolean isNo() {
+            return false;
+        }
+
+        public void handleExpiredBackstagePasses() {
+            decreaseQualityIfItemHasQuality();
+        }
+
     }
 
     final String name;
@@ -27,9 +96,8 @@ public class Item {
         this.name = name;
         this.sellIn = sellIn;
         this.quality = quality;
-        isAgedBrie = name.equals(AGED_BRIE) ? IsAgedBrie.Yes : IsAgedBrie.No;
-        isBackstagePasses = name.equals(BACKSTAGE_PASSES) ? IsBackstagePasses.Yes
-                : IsBackstagePasses.No;
+        isAgedBrie = name.equals(AGED_BRIE) ? new AgedBrie() : new NotAgedBrie();
+        isBackstagePasses = name.equals(BACKSTAGE_PASSES) ? new BackstagePasses() : new NotBackstagePasses();
         isSulfuras = name.equals(SULFURAS);
     }
 
@@ -57,7 +125,7 @@ public class Item {
     }
 
     void increaseQualityOfBackstagePasses() {
-        if (isBackstagePasses == IsBackstagePasses.Yes) {
+        if (isBackstagePasses.isYes()) {
             increaseQualityIfFarFromExpiry();
             increaseQualityIfCloseToExpiry();
         }
@@ -83,32 +151,20 @@ public class Item {
     }
 
     void updateQuality() {
-        if (isAgedBrie != IsAgedBrie.Yes && isBackstagePasses != IsBackstagePasses.Yes) {
+        if (notBrieAndNotBackstagePasses()) {
             decreaseQualityIfItemHasQuality();
         } else {
             increaseQualityIncludingBackstagePasses();
         }
     }
 
-    void handleExpiredBackstagePasses() {
-        if (isBackstagePasses != IsBackstagePasses.Yes) {
-            decreaseQualityIfItemHasQuality();
-        } else {
-            quality = 0;
-        }
-    }
-
-    void handleExpired() {
-        if (isAgedBrie != IsAgedBrie.Yes) {
-            handleExpiredBackstagePasses();
-        } else {
-            increaseQualityIfNotMax();
-        }
+    private boolean notBrieAndNotBackstagePasses() {
+        return !isAgedBrie.isYes() && !isBackstagePasses.isYes();
     }
 
     void handleIfExpired() {
         if (sellIn < 0) {
-            handleExpired();
+            isAgedBrie.handleExpired();
         }
     }
 

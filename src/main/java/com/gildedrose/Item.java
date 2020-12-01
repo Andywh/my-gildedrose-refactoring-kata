@@ -10,21 +10,23 @@ public class Item {
     public static final int CLOSE_TO_EXPIRY = 6;
 
     interface IsAgedBrie {
-        boolean isNotAgedBrie();
 
         void handleExpired();
 
         void updateQuality();
 
         void initializeBackstagePassesAndSulfuras(String name);
+
+        void increaseQuality();
+
+        void decreaseQuality();
+
+        void updateSellIn();
     }
 
     class AgedBrie implements IsAgedBrie {
 
-        @Override
-        public boolean isNotAgedBrie() {
-            return false;
-        }
+        private IsBackstagePasses isBackstagePasses;
 
         public void handleExpired() {
             increaseQualityIfNotMax();
@@ -39,14 +41,23 @@ public class Item {
             isBackstagePasses.initializeNotSulfuras();
         }
 
+        public void increaseQuality() {
+            isBackstagePasses.increaseQuality();
+        }
+
+        public void decreaseQuality() {
+            isBackstagePasses.decreaseQuality();
+        }
+
+        public void updateSellIn() {
+            isBackstagePasses.updateSellIn();
+        }
+
     }
 
     class NotAgedBrie implements IsAgedBrie {
 
-        @Override
-        public boolean isNotAgedBrie() {
-            return true;
-        }
+        private IsBackstagePasses isBackstagePasses;
 
         public void handleExpired() {
             isBackstagePasses.handleExpired();
@@ -59,6 +70,18 @@ public class Item {
         public void initializeBackstagePassesAndSulfuras(String name) {
             isBackstagePasses = name.equals(BACKSTAGE_PASSES) ? new BackstagePasses() : new NotBackstagePasses();
             isBackstagePasses.initializeSulfuras(name);
+        }
+
+        public void increaseQuality() {
+            isBackstagePasses.increaseQuality();
+        }
+
+        public void decreaseQuality() {
+            isBackstagePasses.decreaseQuality();
+        }
+
+        public void updateSellIn() {
+            isBackstagePasses.updateSellIn();
         }
 
     }
@@ -75,9 +98,14 @@ public class Item {
 
         void initializeNotSulfuras();
 
+        void decreaseQuality();
+
+        void updateSellIn();
     }
 
     class BackstagePasses implements IsBackstagePasses {
+
+        private IsSulfuras isSulfuras;
 
         public void handleExpired() {
             quality = 0;
@@ -100,9 +128,20 @@ public class Item {
             isSulfuras = new NotSulfuras();
         }
 
+        public void decreaseQuality() {
+            isSulfuras.decreaseQuality();
+        }
+
+        public void updateSellIn() {
+            isSulfuras.updateSellIn();
+        }
+
     }
 
     class NotBackstagePasses implements IsBackstagePasses {
+
+        private IsSulfuras isSulfuras;
+
 
         public void handleExpired() {
             decreaseQualityIfItemHasQuality();
@@ -121,6 +160,14 @@ public class Item {
 
         public void initializeNotSulfuras() {
             isSulfuras = new NotSulfuras();
+        }
+
+        public void decreaseQuality() {
+            isSulfuras.decreaseQuality();
+        }
+
+        public void updateSellIn() {
+            isSulfuras.updateSellIn();
         }
 
     }
@@ -161,8 +208,6 @@ public class Item {
     private int sellIn;
     private int quality;
     private IsAgedBrie isAgedBrie;
-    private IsBackstagePasses isBackstagePasses;
-    private IsSulfuras isSulfuras;
 
     public Item(String name, int sellIn, int quality) {
         this.name = name;
@@ -198,14 +243,18 @@ public class Item {
     void increaseQualityIncludingBackstagePasses() {
         if (quality < MAX_QUALITY) {
             quality++;
-            isBackstagePasses.increaseQuality();
+            isAgedBrie.increaseQuality();
         }
     }
 
     void decreaseQualityIfItemHasQuality() {
         if (quality > 0) {
-            isSulfuras.decreaseQuality();
+            decreaseQuality();
         }
+    }
+
+    private void decreaseQuality() {
+        isAgedBrie.decreaseQuality();
     }
 
     void handleIfExpired() {
@@ -216,7 +265,11 @@ public class Item {
 
     void update() {
         isAgedBrie.updateQuality();
-        isSulfuras.updateSellIn();
+        updateSellIn();
+    }
+
+    private void updateSellIn() {
+        isAgedBrie.updateSellIn();
     }
 
 }

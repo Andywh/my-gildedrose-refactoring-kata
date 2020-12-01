@@ -36,7 +36,7 @@ public class Item {
 
         public void initializeBackstagePassesAndSulfuras(String name) {
             isBackstagePasses = new NotBackstagePasses();
-            isSulfuras = new NotSulfuras();
+            isBackstagePasses.initializeNotSulfuras();
         }
 
     }
@@ -72,6 +72,9 @@ public class Item {
         void increaseQuality();
 
         void initializeSulfuras(String name);
+
+        void initializeNotSulfuras();
+
     }
 
     class BackstagePasses implements IsBackstagePasses {
@@ -93,6 +96,9 @@ public class Item {
             isSulfuras = new NotSulfuras();
         }
 
+        public void initializeNotSulfuras() {
+            isSulfuras = new NotSulfuras();
+        }
 
     }
 
@@ -111,6 +117,10 @@ public class Item {
 
         public void initializeSulfuras(String name) {
             isSulfuras = name.equals(SULFURAS) ? new Sulfuras() : new NotSulfuras();
+        }
+
+        public void initializeNotSulfuras() {
+            isSulfuras = new NotSulfuras();
         }
 
     }

@@ -2,16 +2,28 @@ package com.gildedrose;
 
 public class Item {
 
-    public String name;
+    enum IsAgedBrie {
+        Yes, No
+    }
+    enum IsBackstagePasses {
+        Yes, No
+    }
 
-    public int sellIn;
-
-    public int quality;
+    final String name;
+    private int sellIn;
+    private int quality;
+    private IsAgedBrie isAgedBrie;
+    private IsBackstagePasses isBackstagePasses;
+    private boolean isHandOfSulfuras;
 
     public Item(String name, int sellIn, int quality) {
         this.name = name;
         this.sellIn = sellIn;
         this.quality = quality;
+        isAgedBrie = name.equals("Aged Brie") ? IsAgedBrie.Yes : IsAgedBrie.No;
+        isBackstagePasses = name.equals("Backstage passes to a TAFKAL80ETC concert") ? IsBackstagePasses.Yes
+                : IsBackstagePasses.No;
+        isHandOfSulfuras = name.equals("Sulfuras, Hand of Ragnaros");
     }
 
     @Override
@@ -42,7 +54,7 @@ public class Item {
     }
 
     void increaseQualityOfBackstagePasses() {
-        if (name.equals("Backstage passes to a TAFKAL80ETC concert")) {
+        if (isBackstagePasses == IsBackstagePasses.Yes) {
             increaseQualityIfFarFromExpiry();
             increaseQualityIfCloseToExpiry();
         }
@@ -56,7 +68,7 @@ public class Item {
     }
 
     void decreaseQuality() {
-        if (!name.equals("Sulfuras, Hand of Ragnaros")) {
+        if (!isHandOfSulfuras) {
             quality = quality - 1;
         }
     }
@@ -68,7 +80,7 @@ public class Item {
     }
 
     void updateQuality() {
-        if (!name.equals("Aged Brie") && !name.equals("Backstage passes to a TAFKAL80ETC concert")) {
+        if (isAgedBrie != IsAgedBrie.Yes && isBackstagePasses != IsBackstagePasses.Yes) {
             decreaseQualityIfItemHasQuality();
         } else {
             increaseQualityIncludingBackstagePasses();
@@ -76,7 +88,7 @@ public class Item {
     }
 
     void handleExpiredBackstagePasses() {
-        if (!name.equals("Backstage passes to a TAFKAL80ETC concert")) {
+        if (isBackstagePasses != IsBackstagePasses.Yes) {
             decreaseQualityIfItemHasQuality();
         } else {
             quality = 0;
@@ -84,7 +96,7 @@ public class Item {
     }
 
     void handleExpired() {
-        if (!name.equals("Aged Brie")) {
+        if (isAgedBrie != IsAgedBrie.Yes) {
             handleExpiredBackstagePasses();
         } else {
             increaseQualityIfNotMax();
@@ -98,7 +110,7 @@ public class Item {
     }
 
     void updateSellIn() {
-        if (!name.equals("Sulfuras, Hand of Ragnaros")) {
+        if (!isHandOfSulfuras) {
             sellIn = sellIn - 1;
         }
         handleIfExpired();

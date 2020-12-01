@@ -56,7 +56,6 @@ public class Item {
     }
 
     void decreaseQuality() {
-
         if (!name.equals("Sulfuras, Hand of Ragnaros")) {
             quality = quality - 1;
         }
@@ -102,7 +101,7 @@ public class Item {
         if (!name.equals("Sulfuras, Hand of Ragnaros")) {
             sellIn = sellIn - 1;
         }
-        handleExpired();
+        handleIfExpired();
     }
 
 }

@@ -104,4 +104,9 @@ public class Item {
         handleIfExpired();
     }
 
+    void update() {
+        updateQuality();
+        updateSellIn();
+    }
+
 }

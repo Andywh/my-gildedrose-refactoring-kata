@@ -2,6 +2,10 @@ package com.gildedrose;
 
 public class Item {
 
+    public static final String AGED_BRIE = "Aged Brie";
+    public static final String BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert";
+    public static final String SULFURAS = "Sulfuras, Hand of Ragnaros";
+
     enum IsAgedBrie {
         Yes, No
     }
@@ -20,10 +24,10 @@ public class Item {
         this.name = name;
         this.sellIn = sellIn;
         this.quality = quality;
-        isAgedBrie = name.equals("Aged Brie") ? IsAgedBrie.Yes : IsAgedBrie.No;
-        isBackstagePasses = name.equals("Backstage passes to a TAFKAL80ETC concert") ? IsBackstagePasses.Yes
+        isAgedBrie = name.equals(AGED_BRIE) ? IsAgedBrie.Yes : IsAgedBrie.No;
+        isBackstagePasses = name.equals(BACKSTAGE_PASSES) ? IsBackstagePasses.Yes
                 : IsBackstagePasses.No;
-        isHandOfSulfuras = name.equals("Sulfuras, Hand of Ragnaros");
+        isHandOfSulfuras = name.equals(SULFURAS);
     }
 
     @Override

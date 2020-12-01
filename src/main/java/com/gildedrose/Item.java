@@ -135,7 +135,6 @@ public class Item {
         public void updateSellIn() {
             isSulfuras.updateSellIn();
         }
-
     }
 
     class NotBackstagePasses implements IsBackstagePasses {

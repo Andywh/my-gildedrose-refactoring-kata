@@ -10,18 +10,20 @@ public class Item {
     public static final int CLOSE_TO_EXPIRY = 6;
 
     interface IsAgedBrie {
-        boolean isYes();
+        boolean isNotAgedBrie();
 
         void handleExpired();
 
         void updateQuality();
+
+        void initializeBackstagePassesAndSulfuras(String name);
     }
 
     class AgedBrie implements IsAgedBrie {
 
         @Override
-        public boolean isYes() {
-            return true;
+        public boolean isNotAgedBrie() {
+            return false;
         }
 
         public void handleExpired() {
@@ -32,44 +34,49 @@ public class Item {
             increaseQualityIncludingBackstagePasses();
         }
 
+        public void initializeBackstagePassesAndSulfuras(String name) {
+            isBackstagePasses = new NotBackstagePasses();
+            isSulfuras = new NotSulfuras();
+        }
 
     }
 
     class NotAgedBrie implements IsAgedBrie {
 
         @Override
-        public boolean isYes() {
-            return false;
+        public boolean isNotAgedBrie() {
+            return true;
         }
 
         public void handleExpired() {
-            isBackstagePasses.handleExpiredBackstagePasses();
+            isBackstagePasses.handleExpired();
         }
 
         public void updateQuality() {
             isBackstagePasses.updateQuality();
         }
 
+        public void initializeBackstagePassesAndSulfuras(String name) {
+            isBackstagePasses = name.equals(BACKSTAGE_PASSES) ? new BackstagePasses() : new NotBackstagePasses();
+            isBackstagePasses.initializeSulfuras(name);
+        }
+
     }
 
     interface IsBackstagePasses {
-        boolean isYes();
 
-        void handleExpiredBackstagePasses();
+        void handleExpired();
 
         void updateQuality();
 
-        void increaseQualityOfBackstagePasses();
+        void increaseQuality();
+
+        void initializeSulfuras(String name);
     }
 
     class BackstagePasses implements IsBackstagePasses {
 
-        @Override
-        public boolean isYes() {
-            return true;
-        }
-
-        public void handleExpiredBackstagePasses() {
+        public void handleExpired() {
             quality = 0;
         }
 
@@ -77,21 +84,21 @@ public class Item {
             increaseQualityIncludingBackstagePasses();
         }
 
-        public void increaseQualityOfBackstagePasses() {
+        public void increaseQuality() {
             increaseQualityIfFarFromExpiry();
             increaseQualityIfCloseToExpiry();
         }
+
+        public void initializeSulfuras(String name) {
+            isSulfuras = new NotSulfuras();
+        }
+
 
     }
 
     class NotBackstagePasses implements IsBackstagePasses {
 
-        @Override
-        public boolean isYes() {
-            return false;
-        }
-
-        public void handleExpiredBackstagePasses() {
+        public void handleExpired() {
             decreaseQualityIfItemHasQuality();
         }
 
@@ -99,7 +106,43 @@ public class Item {
             decreaseQualityIfItemHasQuality();
         }
 
-        public void increaseQualityOfBackstagePasses() {
+        public void increaseQuality() {
+        }
+
+        public void initializeSulfuras(String name) {
+            isSulfuras = name.equals(SULFURAS) ? new Sulfuras() : new NotSulfuras();
+        }
+
+    }
+
+    interface IsSulfuras {
+
+        void decreaseQuality();
+
+        void updateSellIn();
+
+    }
+
+    class Sulfuras implements IsSulfuras {
+
+        public void decreaseQuality() {
+        }
+
+        public void updateSellIn() {
+            handleIfExpired();
+        }
+
+    }
+
+    class NotSulfuras implements IsSulfuras {
+
+        public void decreaseQuality() {
+            quality--;
+        }
+
+        public void updateSellIn() {
+            sellIn--;
+            handleIfExpired();
         }
 
     }
@@ -109,15 +152,14 @@ public class Item {
     private int quality;
     private IsAgedBrie isAgedBrie;
     private IsBackstagePasses isBackstagePasses;
-    private boolean isSulfuras;
+    private IsSulfuras isSulfuras;
 
     public Item(String name, int sellIn, int quality) {
         this.name = name;
         this.sellIn = sellIn;
         this.quality = quality;
         isAgedBrie = name.equals(AGED_BRIE) ? new AgedBrie() : new NotAgedBrie();
-        isBackstagePasses = name.equals(BACKSTAGE_PASSES) ? new BackstagePasses() : new NotBackstagePasses();
-        isSulfuras = name.equals(SULFURAS);
+        isAgedBrie.initializeBackstagePassesAndSulfuras(name);
     }
 
     @Override
@@ -146,19 +188,13 @@ public class Item {
     void increaseQualityIncludingBackstagePasses() {
         if (quality < MAX_QUALITY) {
             quality++;
-            isBackstagePasses.increaseQualityOfBackstagePasses();
-        }
-    }
-
-    void decreaseQuality() {
-        if (!isSulfuras) {
-            quality--;
+            isBackstagePasses.increaseQuality();
         }
     }
 
     void decreaseQualityIfItemHasQuality() {
         if (quality > 0) {
-            decreaseQuality();
+            isSulfuras.decreaseQuality();
         }
     }
 
@@ -168,16 +204,9 @@ public class Item {
         }
     }
 
-    void updateSellIn() {
-        if (!isSulfuras) {
-            sellIn--;
-        }
-        handleIfExpired();
-    }
-
     void update() {
         isAgedBrie.updateQuality();
-        updateSellIn();
+        isSulfuras.updateSellIn();
     }
 
 }

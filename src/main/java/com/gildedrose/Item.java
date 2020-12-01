@@ -5,6 +5,9 @@ public class Item {
     public static final String AGED_BRIE = "Aged Brie";
     public static final String BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert";
     public static final String SULFURAS = "Sulfuras, Hand of Ragnaros";
+    public static final int MAX_QUALITY = 50;
+    public static final int FAR_FROM_EXPIRY = 11;
+    public static final int CLOSE_TO_EXPIRY = 6;
 
     enum IsAgedBrie {
         Yes, No
@@ -18,7 +21,7 @@ public class Item {
     private int quality;
     private IsAgedBrie isAgedBrie;
     private IsBackstagePasses isBackstagePasses;
-    private boolean isHandOfSulfuras;
+    private boolean isSulfuras;
 
     public Item(String name, int sellIn, int quality) {
         this.name = name;
@@ -27,7 +30,7 @@ public class Item {
         isAgedBrie = name.equals(AGED_BRIE) ? IsAgedBrie.Yes : IsAgedBrie.No;
         isBackstagePasses = name.equals(BACKSTAGE_PASSES) ? IsBackstagePasses.Yes
                 : IsBackstagePasses.No;
-        isHandOfSulfuras = name.equals(SULFURAS);
+        isSulfuras = name.equals(SULFURAS);
     }
 
     @Override
@@ -35,24 +38,20 @@ public class Item {
         return this.name + ", " + this.sellIn + ", " + this.quality;
     }
 
-    void increaseQuality() {
-        quality = quality + 1;
-    }
-
     void increaseQualityIfNotMax() {
-        if (quality < 50) {
-            increaseQuality();
+        if (quality < MAX_QUALITY) {
+            quality++;
         }
     }
 
     void increaseQualityIfFarFromExpiry() {
-        if (sellIn < 11) {
+        if (sellIn < FAR_FROM_EXPIRY) {
             increaseQualityIfNotMax();
         }
     }
 
     void increaseQualityIfCloseToExpiry() {
-        if (sellIn < 6) {
+        if (sellIn < CLOSE_TO_EXPIRY) {
             increaseQualityIfNotMax();
         }
     }
@@ -65,15 +64,15 @@ public class Item {
     }
 
     void increaseQualityIncludingBackstagePasses() {
-        if (quality < 50) {
-            increaseQuality();
+        if (quality < MAX_QUALITY) {
+            quality++;
             increaseQualityOfBackstagePasses();
         }
     }
 
     void decreaseQuality() {
-        if (!isHandOfSulfuras) {
-            quality = quality - 1;
+        if (!isSulfuras) {
+            quality--;
         }
     }
 
@@ -114,8 +113,8 @@ public class Item {
     }
 
     void updateSellIn() {
-        if (!isHandOfSulfuras) {
-            sellIn = sellIn - 1;
+        if (!isSulfuras) {
+            sellIn--;
         }
         handleIfExpired();
     }

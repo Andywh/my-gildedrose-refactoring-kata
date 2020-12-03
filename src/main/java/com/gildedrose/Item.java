@@ -16,7 +16,7 @@ public class Item {
         this.name = name;
         this.sellIn = sellIn;
         this.quality = quality;
-        item = GoodsFactory.buildItem(name, this);
+        item = ItemFactory.buildItem(name, this);
     }
 
     @Override

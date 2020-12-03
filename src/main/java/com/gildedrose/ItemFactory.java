@@ -3,7 +3,7 @@ package com.gildedrose;
 /**
  * Created by Ai Lun on 2020-12-03.
  */
-public class GoodsFactory {
+public class ItemFactory {
 
     private static final String BACK_STAGE = "Backstage passes to a TAFKAL80ETC concert";
     public static final String AGED_BRIE = "Aged Brie";

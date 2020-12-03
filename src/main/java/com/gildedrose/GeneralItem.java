@@ -19,7 +19,7 @@ public class GeneralItem {
         item.sellIn--;
     }
 
-    void handleExpire2() {
+    void handleIfExpire() {
         if (item.sellIn < 0) {
             handleExpire();
         }

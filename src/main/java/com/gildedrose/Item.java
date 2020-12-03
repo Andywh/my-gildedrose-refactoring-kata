@@ -39,6 +39,6 @@ public class Item {
     public void updateQuality() {
         item.updateQuality();
         item.updateSellIn();
-        item.handleExpire2();
+        item.handleIfExpire();
     }
 }

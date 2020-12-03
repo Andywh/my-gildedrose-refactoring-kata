@@ -30,10 +30,14 @@ public class Item {
         }
     }
 
-    void decreaseQualityIfNotZero() {
+    void decreaseQualityIfHasQuality() {
         if (quality > 0) {
             quality--;
         }
+    }
+
+    void decreaseSellIn() {
+        sellIn--;
     }
 
     public void updateQuality() {

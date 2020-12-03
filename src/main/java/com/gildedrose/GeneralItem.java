@@ -12,11 +12,11 @@ public class GeneralItem {
     }
 
     void updateQuality() {
-        item.decreaseQualityIfNotZero();
+        item.decreaseQualityIfHasQuality();
     }
 
     void updateSellIn() {
-        item.sellIn--;
+        item.decreaseSellIn();
     }
 
     void handleIfExpire() {
@@ -26,7 +26,7 @@ public class GeneralItem {
     }
 
     void handleExpire() {
-        item.decreaseQualityIfNotZero();
+        item.decreaseQualityIfHasQuality();
     }
 
 }

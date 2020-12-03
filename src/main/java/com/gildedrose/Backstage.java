@@ -8,8 +8,6 @@ public class Backstage extends GeneralItem {
     public static final int FAR_FROM_EXPIRE = 11;
     public static final int CLOSE_TO_EXPIRE = 6;
 
-    //private Item item;
-
     public Backstage(Item item) {
         super(item);
     }
